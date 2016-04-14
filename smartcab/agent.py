@@ -27,8 +27,8 @@ class LearningAgent(Agent):
         ## Q learning constants
         ## SET - gamma, alpha, defaultQ
         self.gamma = 0.5 ## Discount factor
-        self.alpha = 0.4 ## set learning rate
-        self.defaultQ = 0.01 ## default value for Q if non exists for given state
+        self.alpha = 0.5 ## set learning rate
+        self.defaultQ = 0.01 ## default value for Q if none exists for given state
 
 
         ## Instantiate tables to tracking information later
@@ -154,7 +154,6 @@ class LearningAgent(Agent):
                 'waypoint':         s['waypoint'],
                 'action':           a,
                 'Q':                new_Q,
-                'deadline_range':   state['deadline_range']
             }
             self.qtable.append(Q_entry)
 
@@ -170,7 +169,7 @@ class LearningAgent(Agent):
         deadline = self.env.get_deadline(self)
 
         # Update state
-        self.state = {'light': inputs['light'],'oncoming': inputs['oncoming'],'right': inputs['right'],'left': inputs['left'],'deadline': deadline, 'waypoint': self.next_waypoint, 'deadline_range': self.deadline_range }
+        self.state = {'light': inputs['light'],'oncoming': inputs['oncoming'],'right': inputs['right'],'left': inputs['left'],'deadline': deadline, 'waypoint': self.next_waypoint}
         # Select action according to your policy
 
         ## EXERCISE 1: initial action based on random choice of the action_table for exercise 1,
@@ -213,7 +212,7 @@ class LearningAgent(Agent):
 
 
         ## define next state (s') after move
-        self.next_state = {'light': self.next_inputs['light'],'oncoming': self.next_inputs['oncoming'],'right': self.next_inputs['right'],'left': self.next_inputs['left'], 'waypoint': self.next_waypoint, 'deadline_range': self.deadline_range}
+        self.next_state = {'light': self.next_inputs['light'],'oncoming': self.next_inputs['oncoming'],'right': self.next_inputs['right'],'left': self.next_inputs['left'], 'waypoint': self.next_waypoint}
 
         
         ## run the Q learning algorithm based in the updateQ function
@@ -265,7 +264,7 @@ def run():
 
     # Now simulate it
     sim = Simulator(e, update_delay=.00001)  # reduce update_delay to speed up simulation
-    sim.run(n_trials=500)  # press Esc or close pygame window to quit
+    sim.run(n_trials=100)  # press Esc or close pygame window to quit
 
 
 if __name__ == '__main__':
