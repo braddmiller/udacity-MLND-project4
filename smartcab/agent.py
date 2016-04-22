@@ -41,8 +41,6 @@ class LearningAgent(Agent):
         self.planner.route_to(destination)
         # TODO: Prepare for a new trip; reset any variables here, if required
 
-        ## Experimenting with weighting deadline by moves left
-        self.deadline_range = "high"
 
 
         ## instantiate total reward summation
@@ -74,11 +72,6 @@ class LearningAgent(Agent):
 
     def findQ(self, state, action):
         ## Search the Q table for the state including which action was taken
-
-        ## Q with deadline state variable
-        # Q = next((item for item in self.qtable if item['light'] == state['light'] and item['oncoming'] == state['oncoming'] and item['right'] == state['right'] and item['left'] == state['left'] and item['waypoint'] == state['waypoint'] and item['deadline_range'] == state['deadline_range']), None)
-        
-        # Q without deadline state variable
         Q = next((item for item in self.qtable if item['light'] == state['light'] and item['oncoming'] == state['oncoming'] and item['right'] == state['right'] and item['left'] == state['left'] and item['waypoint'] == state['waypoint'] and item['action'] == action), None)
         return Q
 
@@ -86,10 +79,6 @@ class LearningAgent(Agent):
         ## Search the Q table for the state without the action
         ## useful for deciding which action to take and finding Q(s', a')
 
-        ## With deadline state variable
-        # q = filter(lambda spec_states: spec_states['light'] == state['light'] and spec_states['oncoming'] == state['oncoming'] and spec_states['right'] == state['right'] and spec_states['left'] == state['left'] and spec_states['waypoint'] == state['waypoint'] and spec_states['deadline_range'] == state['deadline_range'], self.qtable)
-        
-        ## without deadline state variable
         q = filter(lambda spec_states: spec_states['light'] == state['light'] and spec_states['oncoming'] == state['oncoming'] and spec_states['right'] == state['right'] and spec_states['left'] == state['left'] and spec_states['waypoint'] == state['waypoint'], self.qtable)
 
         return q
@@ -166,10 +155,9 @@ class LearningAgent(Agent):
         # Gather inputs
         self.next_waypoint = self.planner.next_waypoint()  # from route planner, also displayed by simulator
         inputs = self.env.sense(self)
-        deadline = self.env.get_deadline(self)
 
         # Update state
-        self.state = {'light': inputs['light'],'oncoming': inputs['oncoming'],'right': inputs['right'],'left': inputs['left'],'deadline': deadline, 'waypoint': self.next_waypoint}
+        self.state = {'light': inputs['light'],'oncoming': inputs['oncoming'],'right': inputs['right'],'left': inputs['left'], 'waypoint': self.next_waypoint}
         # Select action according to your policy
 
         ## EXERCISE 1: initial action based on random choice of the action_table for exercise 1,
@@ -196,12 +184,6 @@ class LearningAgent(Agent):
 
         # Execute action and get reward
         reward = self.env.act(self, action)
-
-        # experimenting with weighting rewards by deadline
-        if deadline < 10:
-            reward = self.env.act(self, action)
-            self.deadline_range = "low"
-
 
 
         ## save total reward for reference
@@ -263,7 +245,7 @@ def run():
     e.set_primary_agent(a, enforce_deadline=True)  # set agent to track
 
     # Now simulate it
-    sim = Simulator(e, update_delay=.00001)  # reduce update_delay to speed up simulation
+    sim = Simulator(e, update_delay=.000005)  # reduce update_delay to speed up simulation
     sim.run(n_trials=100)  # press Esc or close pygame window to quit
 
 
